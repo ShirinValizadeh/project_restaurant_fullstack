@@ -1,112 +1,158 @@
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
-  <head>
-    <%- include('partials/header') %>
-  </head>
-  <body>
-    <%- include('partials/bodyHeader') %>
-    <!-- #header -->
 
-    <!-- Start reservation Area -->
-    <section
-      class="reservation-area section-gap relative costumerLoginKitchen"
-      style="padding-top: 300px;"
-    >
-      <div class="overlay overlay-bg"></div>
-      <div class="container">
-        <div class="row justify-content-between align-items-center">
-          <div class="col-lg-6 reservation-left">
-            <h1 class="text-white" id="loginKitchenHeadline">
-              Login to your kitchen.
-            </h1>
-            <p class="text-white pt-20" id="loginKitchenMessage">
-              Login to your kitchen to see all your orders that are coming from
-              your costumers.
-            </p>
-          </div>
-          <div class="col-lg-5 reservation-right">
-            <form
-              class="form-wrap text-center"
-              action="#"
-              style="padding-top: 80px; padding-bottom: 80px;"
-            >
-              <input
-                type="email"
-                class="form-control"
-                name="email"
-                id="loginKitchenEmail"
-                placeholder="Your Email Address"
-                onfocus="this.placeholder = ''"
-                onblur="this.placeholder = 'Your Email Address'"
-              />
-              <input
-                type="password"
-                class="form-control"
-                name="password"
-                id="loginKitchenPassword"
-                placeholder="Password"
-                onfocus="this.placeholder = ''"
-                onblur="this.placeholder = 'Password'"
-              />
+<head>
+  <%- include('partials/header') %>
+</head>
 
-              <button
-                class="primary-btn text-uppercase mt-20"
-                id="loginKitchenBtn"
-              >
-                Login
-              </button>
-            </form>
+<body>
+  <div class="bg-dark" style="
+        width: 100%;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: center;
+      ">
+    <nav id="nav-menu-container">
+      <ul class="nav-menu">
+        <li><a href="/login/logout" style="font-size: 18px;">Logout</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Start menu-area Area -->
+  <section class="menu-area section-gap" id="menu" style="height: 100vh; padding-bottom: 0; padding-top: 40px;">
+    <div class="container">
+      <div class="filters-content">
+        <div class="row grid">
+          <!-- JSX LOOP TO RENDER MENU -->
+
+
+
+          <div class="col-md-12 all">
+            <div class="single-menu">
+              <!-- 
+                <div class="title-wrap d-flex justify-content-between ">
+                  <h3 class="text-uppercase ">Table number: #</h3>
+                </div>
+
+                <div style="display: flex; justify-content: space-between;">
+                  <button
+                    class="btn btn-small bg-danger text-white tableResetBtn"
+                    tableId=""
+                  >
+                    Reset
+                  </button>
+                </div> -->
+              <!-- accordion -->
+              <!--Accordion wrapper-->
+              <% tableMenu[1].forEach(table => { %>
+              <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+
+                <!-- Accordion card -->
+                <div class="card">
+
+                  <!-- Card header -->
+                  <div class="card-header" role="tab" id="headingOne1">
+                    <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1" aria-expanded="true"
+                      aria-controls="collapseOne1">
+                      <h3 class="mb-0 text-center">
+                        Table number: #<%= table.number %>
+                      </h3>
+                    </a>
+                  </div>
+
+
+
+                  <!-- Card body -->
+                  <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1"
+                    data-parent="#accordionEx">
+                    <ul class="card-body">
+                      <li> <a href="#" class="font-weight-bold h3 lineThrought"> <%= table.category %> </a> </li>
+                      <li> <a href="#" class="font-weight-bold h3 lineThrought">
+                          <h4><%= table.number %> - <%= table.title %></h4>
+                        </a> </li>
+                      <li> <a href="#" class="font-weight-bold h3 lineThrought"> Drink </a> </li>
+
+                    </ul>
+                    <div style="display: flex; justify-content:center; ;">
+                      <button style="width: 100%" class="btn btn-small bg-danger text-white tableResetBtn " tableId="">
+                        Done
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+                <% }) %>
+                <!-- Accordion card -->
+
+
+                <!-- accordion -->
+
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
-    </section>
-    <!-- End reservation Area -->
+  </section>
+  <!-- End menu-area Area -->
 
-    <!-- End login Area -->
+  <%- include('partials/scripts') %>
 
-    <!-- start footer Area -->
-    <%- include('partials/footer') %>
-    <!-- End footer Area -->
+  <script>
 
-    <%- include('partials/scripts') %>
-    <script>
-      //GET THE BUTTON AND MAKE VALIDATION
-      const loginKitchenBtn = document.querySelector("#loginKitchenBtn");
-      loginKitchenBtn.addEventListener("click", (e) => {
+    document.querySelectorAll('.lineThrought').forEach(element => {
+      element.addEventListener('click', (e) => {
         e.preventDefault();
-        const loginKitchenEmail = document.querySelector("#loginKitchenEmail");
-        const loginKitchenPassword = document.querySelector(
-          "#loginKitchenPassword"
-        );
-        let isVerified = {
-          valid: true,
-          msg: "",
-        };
+        console.log(e.target);
+        e.target.style.textDecoration = "line-through"
+        // e.target.classList.toggle('decoration')
+      });
+    });
 
-        if (!loginKitchenEmail.value.trim()) {
-          isVerified.valid = false;
-          isVerified.msg += "Please feel out email<br>";
-        }
-        if (!loginKitchenPassword.value) {
-          isVerified.valid = false;
-          isVerified.msg += "Please feel out password<br>";
-        }
 
-        if (!isVerified.valid) {
-          errorMessage(isVerified.msg);
-        } else {
-          const data = {
-            email: loginKitchenEmail.value,
-            password: loginKitchenPassword.value,
-          };
-          postData("/login/kitchen", data).then((data) => {
-            console.log(data);
+  </script>
+
+
+
+  <!-- <script>
+      /////////////////
+      //SERVICE BUTTONS
+      const serviceResetBtn = document.querySelectorAll(".serviceResetBtn");
+      serviceResetBtn.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          postData("/login/service/tableService", {
+            tableId: e.target.getAttribute("tableId"),
+          }).then((data) => {
+            if (data === 1) {
+              e.target.classList.remove("bg-warning");
+              e.target.classList.add("bg-secondary");
+            }
           });
-        }
+        });
       });
 
-      //////////////////////////
-      //FETCH THE REGISTER DATA
+      /////////////////
+      //PAYMENT BUTTONS
+      const payedResetBtn = document.querySelectorAll(".payedResetBtn");
+      payedResetBtn.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          postData("/login/service/tablePayment", {
+            tableId: e.target.getAttribute("tableId"),
+          }).then((data) => {
+            if (data === 1) {
+              e.target.classList.remove("bg-primary");
+              e.target.classList.add("bg-secondary");
+            }
+          });
+        });
+      });
+
+      //POST DATA FETCH
       async function postData(url = "", data = {}) {
         const response = await fetch(url, {
           method: "POST",
@@ -117,25 +163,7 @@
         });
         return response.json();
       }
+    </script>  -->
+</body>
 
-      ///////////////////
-      //ERROR MESSGAE fn
-      function errorMessage(message) {
-        const loginKitchenHeadline = document.querySelector(
-          "#loginKitchenHeadline"
-        );
-        const loginKitchenMessage = document.querySelector(
-          "#loginKitchenMessage"
-        );
-        loginKitchenHeadline.innerHTML =
-          "Something goes wrong check the text below";
-        loginKitchenMessage.innerHTML = message;
-        setTimeout(() => {
-          loginKitchenHeadline.innerHTML = "Login to your kitchen!";
-          loginKitchenMessage.innerHTML =
-            "Login to your kitchen to see all your orders that are coming from your costumers.";
-        }, 6000);
-      }
-    </script>
-  </body>
 </html>

@@ -153,31 +153,32 @@ function updateMeal(
 
 
 
+function dltMeal(mealid ) {
+  return new Promise((resolve, reject) => {
+
+    getMeal(mealid).then((meal) => {
+      
+        if (fs.existsSync('./public' + meal.img) ) {
+        fs.unlinkSync('./public' + meal.img)
+      }
+      else {
+        reject(new Error('haking try'))
+    }
+   
+      MENUSCHEMA.deleteOne({ _id: mealid }).then(() => {
+                  resolve()
+              }).catch(error => {
+                  reject(error)
+              })       
+      }).catch(error => {
+          reject(error)
+      })
 
 
 
+  })
+}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//editmeal
-// delet meal
-
-module.exports = { addMeal, getAllMeals, updateMeal, getMeal };
+module.exports = { addMeal, getAllMeals, updateMeal, getMeal , dltMeal };
