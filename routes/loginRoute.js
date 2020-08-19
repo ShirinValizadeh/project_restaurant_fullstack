@@ -45,27 +45,13 @@ loginRoute.post("/", (req, res) => {
 //GET LOGIN/KITCHEN ROUTE
 loginRoute.get("/kitchen", (req, res) => {
   if (req.session.user) {
-    const tableNummer = serviceModule
-    .getTable(req.session.user._id, req.session.table_number)
-    .then((table) => {
-      return table;
+    serviceModule
+    .getOrder(req.session.user._id , req.session.table_number , req.session.orders)
+    .then((order) =>{
+      return order
     })
-    .catch((err) => console.log(err));
 
-    const promisemeals = adminModule
-    .getAllMeals(req.session.user._id)
-    .then((meals) => {
-      return meals;
-    })
-    .catch((err) => console.log(err));
     
-    
-    Promise.all([tableNummer, promisemeals])
-      .then((tableMenu) => {
-        res.render("kitchen", { tableMenu });
-      })
-      .catch((err) => console.log(err));
-
   } else {
     res.render("loginKitchen");
   }
@@ -81,9 +67,9 @@ loginRoute.post("/kitchen", (req, res) => {
       .checkUser(email.trim(), password)
       .then((user) => {
         req.session.user = user;
+        
         res.json(1);
-        // res.render('kitchen')
-        //res.render("login")
+      
       })
       .catch((error) => {
         if (error == 3) {
@@ -96,6 +82,9 @@ loginRoute.post("/kitchen", (req, res) => {
     res.json(2);
   }
 });
+
+
+
 
 /////////////////////
 //GET LOGIN/BAR ROUTE
@@ -185,6 +174,15 @@ loginRoute.post("/service/tablePayment", (req, res) => {
     .catch((err) => console.log(err));
 });
 
+///////////////////////////////
+//POST TABLESERVICE RESET TABLE
+loginRoute.post("/service/resetTable", (req, res) => {
+  serviceModule
+    .resetTableOrder(req.body.tableId)
+    .then(() => res.json(1))
+    .catch((err) => console.log(err));
+});
+
 //////////////////
 //GET LOGIN TABLE
 loginRoute.get("/table", (req, res) => {
@@ -241,20 +239,38 @@ loginRoute.post("/table", (req, res) => {
 //////////////////
 //GET LOGIN TABLE
 loginRoute.post("/table/sendOrder", (req, res) => {
-  const { restaurantId, tableId, orderArr } = req.body;
+  const { restaurantId, tableId, order } = req.body;
   const promiseSetTable = serviceModule
-    .setTableOrders(tableId, orderArr)
+    .setTableOrders(tableId, order)
     .then(() => {
       return;
     })
     .catch((err) => console.log(err));
   const promiseSetKitchen = serviceModule
-    .setOrderToKitchen(restaurantId, tableId, orderArr)
+    .setOrderToKitchen(restaurantId, tableId, order)
     .then(() => {
       return;
     })
     .catch((err) => console.log(err));
   Promise.all([promiseSetTable, promiseSetKitchen])
+    .then(() => res.json(1))
+    .catch(() => res.json(2));
+});
+
+//////////////////
+//GET LOGIN TABLE
+loginRoute.post("/table/needService", (req, res) => {
+  serviceModule
+    .setTableService(req.body.tableId, req.body.neddService)
+    .then(() => res.json(1))
+    .catch(() => res.json(2));
+});
+
+//////////////////
+//GET LOGIN TABLE
+loginRoute.post("/table/wantsToPay", (req, res) => {
+  serviceModule
+    .setTablePayment(req.body.tableId, req.body.wantsToPay)
     .then(() => res.json(1))
     .catch(() => res.json(2));
 });

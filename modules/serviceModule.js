@@ -100,6 +100,16 @@ const getTable = (id, tableNumber) => {
   });
 };
 
+const resetTableOrder = (tableId) => {
+  return new Promise((resolve, reject) => {
+    connect().then(() => {
+      TABLESCHEMA.findByIdAndUpdate({ _id: tableId.trim() }, { orders: [] })
+        .then(() => resolve())
+        .catch((err) => err);
+    });
+  });
+};
+
 const setOrderToKitchen = (restaurantId, tableId, orderArr) => {
   return new Promise((resolve, reject) => {
     connect()
@@ -118,6 +128,23 @@ const setOrderToKitchen = (restaurantId, tableId, orderArr) => {
   });
 };
 
+
+
+const getOrder = (id, tableNumber , meals) => {
+  return new Promise((resolve, reject) => {
+    connect().then(() => {
+      KITCHENSCHEMA.find({ restaurantId: id, tableId: tableNumber ,orders:meals})
+        .then((table) => {
+          table.orders
+          resolve(table)
+        })
+        .catch((err) => reject(err));
+    });
+  });
+};
+
+
+
 module.exports = {
   addTables,
   getAllTables,
@@ -126,4 +153,6 @@ module.exports = {
   getTable,
   setTableOrders,
   setOrderToKitchen,
+  resetTableOrder,
+  getOrder
 };
