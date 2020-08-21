@@ -7,15 +7,11 @@ const adminRoute = require("./routes/adminRoute");
 const loginRoute = require("./routes/loginRoute");
 const registerDataModules = require("./modules/registerModule");
 const fileUpload = require("express-fileupload");
-const adminModules = require("./modules/adminModule");
-const fs = require("fs");
+const emailSender = require("./modules/emailSenderModule")
 const session = require("express-session");
 //creat session object options
 const sessionOptions = {
   secret: "restaurant_order",
-  //resave: false,  for debuger
-  //saveUninitialized: true,
-  //cookie: { secure: true }
   cookie: {},
 };
 ////////////////
@@ -52,7 +48,7 @@ app.get("/register", (req, res) => {
 ////////////
 //HOME ROUTE
 app.post("/register", (req, res) => {
-  console.log(req.body);
+ // console.log(req.body);
 
   const { restaurantName, firstName, lastName, email, password } = req.body;
 
@@ -61,10 +57,11 @@ app.post("/register", (req, res) => {
       .registerUser(restaurantName, firstName, lastName, email, password)
       .then(() => {
         res.json(1); //user register success
-        //res.render("login")
+      
       })
       .catch((error) => {
-        console.log(error);
+        //console.log(error);
+        res.render('404')
         if (error == "exist") {
           res.json(3); // user exist
         } else {
@@ -90,9 +87,37 @@ app.get("/verify/:id", (req, res) => {
         res.json(2);
       });
   } else {
-    res.send("error");
+    res.render('404')
   }
 });
+
+
+
+////////////////////////////////
+//emailSender
+app.get('/contact', (req, res) => {
+  res.render('contact')   
+}); 
+
+
+app.post('/contact', (req, res) => {
+  console.log(req.body)
+  const {name,email,subject,message} = req.body
+
+  if (name !="" && name.length < 100 ) {
+        emailSender.sendEmail2(name ,email , subject , message ).then(()=>{
+          res.json(1)
+        }).catch(err=>{
+          res.json(2)
+        })
+  }
+
+
+
+});
+
+
+
 
 /////////////
 //MENU ROUTE
@@ -124,9 +149,8 @@ app.get("/contact", (req, res) => {
   res.render("contact");
 });
 
-app.get("/404", (req, res) => {
-  res.render("404");
-});
+
+
 
 ///////
 //PORT

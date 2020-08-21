@@ -1,6 +1,7 @@
 const connect = require("../models/connectionFn");
 const TABLESCHEMA = require("../models/tablesSchema");
 const KITCHENSCHEMA = require("../models/kitchenSchema");
+const MENUSCHEMA = require("../models/menuSchema");
 
 const addTables = (restaurantId, number) => {
   return new Promise((resolve, reject) => {
@@ -22,11 +23,11 @@ const addTables = (restaurantId, number) => {
               .then(() => {
                 resolve(1);
               })
-              .catch((err) => console.log(err));
+              .catch((err) => reject(err));
           })
-          .catch((err) => console.log(err));
+          .catch((err) => reject(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => reject(err));
   });
 };
 
@@ -36,9 +37,9 @@ const getAllTables = (id) => {
       .then(() => {
         TABLESCHEMA.find({ restaurantId: id })
           .then((tables) => resolve(tables))
-          .catch((err) => console.log(err));
+          .catch((err) => reject(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => reject(err));
   });
 };
 
@@ -55,7 +56,7 @@ const setTableService = (tableId, boolean) => {
             reject(err);
           });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => reject(err));
   });
 };
 
@@ -69,10 +70,12 @@ const setTablePayment = (tableId, boolean) => {
             reject(err);
           });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => reject(err));
   });
 };
 
+//////////////////////////////////
+//SET TABKE ORDERS TO THE KITCHEN
 const setTableOrders = (tableId, orderArr) => {
   return new Promise((resolve, reject) => {
     connect()
@@ -90,12 +93,23 @@ const setTableOrders = (tableId, orderArr) => {
   });
 };
 
+///////////////////
+//GET SINGLE TABLE
 const getTable = (id, tableNumber) => {
   return new Promise((resolve, reject) => {
     connect().then(() => {
       TABLESCHEMA.findOne({ restaurantId: id, table_number: tableNumber })
-        .then((table) => resolve(table))
-        .catch((err) => error);
+        .then((table) => {
+
+ // console.log("GET TABLE:", table);
+          if (table === null) {
+
+            resolve("not_exist");
+          } else {
+            resolve(table);
+          }
+        })
+        .catch((err) => reject(err));
     });
   });
 };
@@ -105,12 +119,12 @@ const resetTableOrder = (tableId) => {
     connect().then(() => {
       TABLESCHEMA.findByIdAndUpdate({ _id: tableId.trim() }, { orders: [] })
         .then(() => resolve())
-        .catch((err) => err);
+        .catch((err) => reject(err));
     });
   });
 };
 
-const setOrderToKitchen = (restaurantId, tableId, orderArr) => {
+const setOrderToKitchen = (restaurantId, tableId, orderArr, tableNumber) => {
   return new Promise((resolve, reject) => {
     connect()
       .then(() => {
@@ -118,6 +132,7 @@ const setOrderToKitchen = (restaurantId, tableId, orderArr) => {
           restaurantId: restaurantId,
           tableId: tableId,
           orders: orderArr,
+          tableNumber: tableNumber,
         });
         newOrder
           .save()
@@ -128,22 +143,38 @@ const setOrderToKitchen = (restaurantId, tableId, orderArr) => {
   });
 };
 
-
-
-const getOrder = (id, tableNumber , meals) => {
+/////////////////////////////////
+//GET ALL ORDERS FOR THE KITCHEN
+const getOrder = (id) => {
   return new Promise((resolve, reject) => {
     connect().then(() => {
-      KITCHENSCHEMA.find({ restaurantId: id, tableId: tableNumber ,orders:meals})
-        .then((table) => {
-          table.orders
-          resolve(table)
+      const promisesArr1 = [];
+      promisesArr1.push(KITCHENSCHEMA.find({ restaurantId: id }));
+      promisesArr1.push(MENUSCHEMA.find({ restaurantId: id }));
+      Promise.all(promisesArr1)
+        .then((results) => {
+          const ordersArr = results[0];
+          const menuArr = results[1];
+          let newOrdersArr = [];
+          ordersArr.forEach((orderObj) => {
+            orderObj.orders.forEach((orderId) => {
+              menuArr.forEach((menu) => {
+                if (menu._id == orderId) {
+                  newOrdersArr.push(menu);
+                }
+              });
+            });
+            orderObj.orders = newOrdersArr;
+            newOrdersArr = [];
+          });
+          resolve(ordersArr);
         })
-        .catch((err) => reject(err));
+        .catch((errors) => {
+          reject(errors);
+        });
     });
   });
 };
-
-
 
 module.exports = {
   addTables,
@@ -154,5 +185,5 @@ module.exports = {
   setTableOrders,
   setOrderToKitchen,
   resetTableOrder,
-  getOrder
+  getOrder,
 };

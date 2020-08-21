@@ -34,7 +34,10 @@ adminRoute.post("/settings", (req, res) => {
     .then((data) => {
       res.json(data);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.render('404')
+    //  console.log(err)
+    });
 });
 
 ////////////////
@@ -43,7 +46,10 @@ adminRoute.get("/menu", (req, res) => {
   adminModule
     .getAllMeals(req.session.user._id)
     .then((meals) => res.render("menu", { meals: meals }))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.render('404')
+    //  console.log(err)
+    });
 });
 
 ////////////////
@@ -52,7 +58,10 @@ adminRoute.get("/adminMenu", (req, res) => {
   adminModule
     .getAllMeals(req.session.user._id)
     .then((meals) => res.render("adminMenu", { meals: meals }))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.render('404')
+    //  console.log(err)
+    });
 });
 
 /////////////////////
@@ -93,7 +102,10 @@ adminRoute.post("/addMeal", (req, res) => {
     .then((data) => {
       res.json(data);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.render('404')
+    //  console.log(err)
+    });
 });
 
 /////////////////////
@@ -113,6 +125,20 @@ adminRoute.post("/deleteMeal", (req, res) => {
     });
 });
 
+
+adminRoute.post("/deleteMealKitchen", (req, res) => {
+  console.log(req.body.menuid);
+  
+  adminModule
+    .dltMealkitchen(req.body.menuid)
+    .then(() => {
+      res.json(1);
+    })
+    .catch((error) => {
+      res.json(2);
+    });
+});
+
 /////////////////////
 //GET ADMIN ADD MEAL
 adminRoute.get("/editMeal/:id", (req, res) => {
@@ -120,7 +146,10 @@ adminRoute.get("/editMeal/:id", (req, res) => {
   adminModule
     .getMeal(mealId)
     .then((meal) => res.render("adminEditMeal", { meal: meal }))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.render('404')
+    //  console.log(err)
+    });
 });
 
 adminRoute.post("/editMeal", (req, res) => {
