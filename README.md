@@ -4,7 +4,7 @@ Fullstack application
 
 ## See it live
 
-[Here you come to the side](https://tim-breuel-order-system.herokuapp.com/)
+[Here you come to the side](https://git.heroku.com/shirin-restaurant-order.git)
 
 ### Technology:
 
