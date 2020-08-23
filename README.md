@@ -3,7 +3,7 @@
 Fullstack application
 
 ## See it live
-click to see ....( https://shirin-restaurant-order.herokuapp.com/)
+click to see ....(https://shirin-restaurant-order.herokuapp.com/)
 
 
 ### Technology:
